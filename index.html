@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charlotte Real Estate AI | Aristides Rodriguez</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0f1c2e;
+    --navy-mid: #162439;
+    --navy-light: #1e3353;
+    --gold: #c9a84c;
+    --gold-light: #e2c97e;
+    --cream: #f5f0e8;
+    --cream-dark: #ede6d6;
+    --text-main: #1a1a2e;
+    --text-muted: #5a6478;
+    --white: #ffffff;
+    --border: rgba(201,168,76,0.2);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-main);
+  }
+
+  header {
+    background: var(--navy);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo-mark {
+    width: 40px; height: 40px;
+    background: var(--gold);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--navy); flex-shrink: 0;
+  }
+
+  .header-text h1 { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--white); font-weight: 600; }
+  .header-text p { font-size: 12px; color: var(--gold-light); font-weight: 300; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .status-dot { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,0.5); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #4caf8c; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .chat-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 20px 0;
+    min-height: 0;
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 24px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--cream-dark); border-radius: 4px; }
+
+  .msg { display: flex; gap: 10px; animation: fadeUp 0.3s ease; }
+  .msg.user { flex-direction: row-reverse; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; margin-top: 2px;
+  }
+  .avatar.ai { background: var(--navy); color: var(--gold); font-family: 'Playfair Display', serif; font-size: 14px; }
+  .avatar.user-av { background: var(--gold); color: var(--navy); }
+
+  .bubble { max-width: 75%; padding: 13px 17px; border-radius: 16px; font-size: 14.5px; line-height: 1.65; }
+  .msg.ai .bubble { background: var(--white); color: var(--text-main); border-radius: 4px 16px 16px 16px; box-shadow: 0 2px 12px rgba(15,28,46,0.08); border: 1px solid rgba(201,168,76,0.12); }
+  .msg.user .bubble { background: var(--navy); color: var(--white); border-radius: 16px 4px 16px 16px; }
+  .bubble p { margin-bottom: 8px; } .bubble p:last-child { margin-bottom: 0; }
+
+  .typing-indicator { display: flex; gap: 10px; align-items: flex-end; }
+  .typing-dots { background: var(--white); border: 1px solid rgba(201,168,76,0.12); border-radius: 4px 16px 16px 16px; padding: 14px 18px; display: flex; gap: 5px; align-items: center; box-shadow: 0 2px 12px rgba(15,28,46,0.08); }
+  .typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: bounce 1.2s infinite; }
+  .typing-dots span:nth-child(2){animation-delay:0.2s} .typing-dots span:nth-child(3){animation-delay:0.4s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+  .input-area { background: var(--white); border-top: 1px solid var(--cream-dark); padding: 16px 20px; position: sticky; bottom: 0; }
+  .input-inner { max-width: 760px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+
+  textarea {
+    flex: 1; border: 1.5px solid var(--cream-dark); border-radius: 12px; padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-main);
+    resize: none; outline: none; min-height: 46px; max-height: 120px; line-height: 1.5;
+    transition: border-color 0.2s; background: var(--cream);
+  }
+  textarea:focus { border-color: var(--gold); background: var(--white); }
+  textarea::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    width: 46px; height: 46px; border-radius: 12px; border: none;
+    background: var(--navy); color: var(--gold); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.1s; flex-shrink: 0;
+  }
+  .send-btn:hover { background: var(--navy-light); }
+  .send-btn:active { transform: scale(0.95); }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .send-btn svg { width: 18px; height: 18px; }
+
+  .input-hint { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 8px; letter-spacing: 0.02em; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .chip { background: var(--white); border: 1px solid var(--border); color: var(--navy); font-size: 13px; padding: 7px 14px; border-radius: 20px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; white-space: nowrap; }
+  .chip:hover { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+
+  .welcome { text-align: center; padding: 32px 0 24px; }
+  .city-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--navy); color: var(--gold-light); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .welcome h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--navy); font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+  .welcome p { color: var(--text-muted); font-size: 14px; max-width: 420px; margin: 0 auto; line-height: 1.6; }
+
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; color: var(--text-muted); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--cream-dark); }
+
+  .error-bubble { background: #fff5f5; border: 1px solid #fecaca; color: #b91c1c; border-radius: 4px 16px 16px 16px; padding: 12px 16px; font-size: 14px; max-width: 75%; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">AR</div>
+  <div class="header-text">
+    <h1>Charlotte Real Estate Intelligence</h1>
+    <p>Powered by Aristides Rodriguez Group</p>
+  </div>
+  <div class="status-dot"><div class="dot"></div>Live</div>
+</header>
+
+<div class="chat-wrapper">
+  <div class="messages" id="messages">
+    <div class="welcome">
+      <div class="city-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+        Charlotte, NC
+      </div>
+      <h2>Your Charlotte Real Estate Advisor</h2>
+      <p>Ask about buying, selling, investing, or relocating to the Charlotte metro area.</p>
+    </div>
+
+    <div class="divider">Start with a question</div>
+
+    <div class="chips" id="chips">
+      <div class="chip" onclick="sendChip(this)">I'm relocating to Charlotte</div>
+      <div class="chip" onclick="sendChip(this)">Best neighborhoods for families?</div>
+      <div class="chip" onclick="sendChip(this)">Is now a good time to buy?</div>
+      <div class="chip" onclick="sendChip(this)">I want to sell my home</div>
+      <div class="chip" onclick="sendChip(this)">Investment properties in Charlotte</div>
+      <div class="chip" onclick="sendChip(this)">Compare South End vs NoDa</div>
+    </div>
+  </div>
+</div>
+
+<div class="input-area">
+  <div class="input-inner">
+    <textarea id="userInput" placeholder="Ask about Charlotte real estate…" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+  <div class="input-hint">AI advisor · Not a substitute for licensed real estate advice</div>
+</div>
+
+<script>
+  let conversationHistory = [];
+  let isLoading = false;
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function sendChip(el) {
+    document.getElementById('userInput').value = el.textContent;
+    el.parentElement.remove();
+    sendMessage();
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if (!text || isLoading) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    appendMessage('user', text);
+    conversationHistory.push({ role: 'user', content: text });
+    showTyping();
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: conversationHistory })
+      });
+
+      const data = await response.json();
+      hideTyping();
+
+      if (!response.ok) {
+        appendError(data.error || 'Something went wrong. Please try again.');
+      } else {
+        conversationHistory.push({ role: 'assistant', content: data.reply });
+        appendMessage('ai', data.reply);
+      }
+    } catch (err) {
+      hideTyping();
+      appendError('Connection error. Please check your internet and try again.');
+    }
+
+    setLoading(false);
+  }
+
+  function appendMessage(role, text) {
+    const msgs = document.getElementById('messages');
+    const msg = document.createElement('div');
+    msg.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = `avatar ${role === 'user' ? 'user-av' : 'ai'}`;
+    avatar.textContent = role === 'user' ? 'You' : 'AR';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerHTML = formatText(text);
+
+    msg.appendChild(avatar);
+    msg.appendChild(bubble);
+    msgs.appendChild(msg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function appendError(msg) {
+    const msgs = document.getElementById('messages');
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ai';
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar ai';
+    avatar.textContent = 'AR';
+    const bubble = document.createElement('div');
+    bubble.className = 'error-bubble';
+    bubble.textContent = msg;
+    wrap.appendChild(avatar);
+    wrap.appendChild(bubble);
+    msgs.appendChild(wrap);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function formatText(text) {
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g,'<em>$1</em>')
+      .replace(/\n\n/g,'</p><p>')
+      .replace(/\n/g,'<br>')
+      .replace(/^/,'<p>').replace(/$/,'</p>');
+  }
+
+  let typingEl = null;
+
+  function showTyping() {
+    const msgs = document.getElementById('messages');
+    typingEl = document.createElement('div');
+    typingEl.className = 'typing-indicator';
+    typingEl.innerHTML = `<div class="avatar ai">AR</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+    msgs.appendChild(typingEl);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
+  function setLoading(state) { isLoading = state; document.getElementById('sendBtn').disabled = state; }
+</script>
+</body>
+</html>
