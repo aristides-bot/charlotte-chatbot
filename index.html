@@ -298,7 +298,7 @@
 
   function formatText(text) {
   // Make URLs clickable FIRST before any escaping
-  text = text.replace(/(https?:\/\/[^\s<]+)/g, '<LINK href="$1">$1</LINK>');
+  text = text.replace(/(https?:\/\/[^\s<]+)/g, '<LINK href="$1">📅 Book a Call with Aristides</LINK>');
   // Make emails clickable FIRST before any escaping
   text = text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<MAIL href="$1">$1</MAIL>');
   // Now escape HTML
