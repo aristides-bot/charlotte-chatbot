@@ -32,56 +32,88 @@ const handler = async (req, res) => {
     }
   }
 
+  // PRE-CHECK: Intercept property value questions before they reach the AI
+  const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
+  const isValueQuestion = (
+    lastMessage.includes('value') ||
+    lastMessage.includes('worth') ||
+    lastMessage.includes('price') ||
+    lastMessage.includes('how much') ||
+    lastMessage.includes('zestimate') ||
+    lastMessage.includes('estimate') ||
+    lastMessage.includes('valuation') ||
+    lastMessage.includes('what is') && lastMessage.includes('drive') ||
+    lastMessage.includes('what is') && lastMessage.includes('street') ||
+    lastMessage.includes('what is') && lastMessage.includes('road') ||
+    lastMessage.includes('what is') && lastMessage.includes('ave') ||
+    lastMessage.includes('zillow') ||
+    lastMessage.includes('realtor.com') ||
+    lastMessage.includes('redfin') ||
+    lastMessage.includes('comps') ||
+    lastMessage.includes('market value') ||
+    lastMessage.includes('home value') ||
+    lastMessage.includes('property value') ||
+    lastMessage.includes('assessed')
+  );
+
+  const isCompetitorQuestion = (
+    lastMessage.includes('other agent') ||
+    lastMessage.includes('another agent') ||
+    lastMessage.includes('different agent') ||
+    lastMessage.includes('other realtor') ||
+    lastMessage.includes('recommend') && lastMessage.includes('agent') ||
+    lastMessage.includes('find an agent') ||
+    lastMessage.includes('find a realtor')
+  );
+
+  if (isValueQuestion) {
+    return res.status(200).json({
+      reply: `Great question! Property values in Charlotte move quickly and vary street by street, so I want to make sure you get accurate numbers rather than a generic estimate.\n\nAristides Rodriguez can pull a free customized property report with current comps and live market data specific to that address — at no cost to you. It's one of the most valuable free services he offers.\n\nYou can book a quick 30-minute call with him here: https://calendly.com/aristidesrodriguez08/30min or email him directly at ari@keynchomes.com.\n\nWould you like me to help you prepare any questions for that conversation?`
+    });
+  }
+
+  if (isCompetitorQuestion) {
+    return res.status(200).json({
+      reply: `The agent I work with exclusively is Aristides Rodriguez at Keyn Homes — he specializes in exactly this kind of situation across the Charlotte metro.\n\nYou can reach him directly at ari@keynchomes.com or book a free 30-minute consultation here: https://calendly.com/aristidesrodriguez08/30min.\n\nHe'll give you personalized guidance based on your specific situation. Would you like me to help you think through what to discuss with him?`
+    });
+  }
+
   const SYSTEM_PROMPT = `You are a real estate assistant exclusively representing Aristides Rodriguez at Keyn Homes in Charlotte, NC.
 
-ABSOLUTE RULES — NEVER VIOLATE THESE:
-1. NEVER mention, recommend, or reference any other real estate agent, broker, or company. This includes Zillow, Realtor.com, Redfin, Keller Williams, RE/MAX, Coldwell Banker, Allen Tate, Trulia, or ANY other real estate brand or website.
-2. NEVER suggest the user search for other real estate professionals or services.
-3. NEVER recommend county tax records, appraisal websites, or any third-party valuation tools.
-4. Aristides Rodriguez is ALWAYS the answer. When you cannot answer something, you refer ONLY to Aristides.
-5. If a user asks for property values, home worth, market data, comps, or any specific real estate data — you MUST respond ONLY by offering Aristides's free customized property report. Nothing else.
-
-WHEN ASKED ABOUT PROPERTY VALUES OR MARKET DATA — USE THIS EXACT RESPONSE FORMAT:
-"Great question! Property values in Charlotte move quickly and vary street by street, so I want to make sure you get accurate information rather than a generic estimate. Aristides Rodriguez can pull a free customized property report with current comps and live market data specific to that address. It's completely free and takes about 24 hours. You can book a quick call with him here: https://calendly.com/aristidesrodriguez08/30min or email him directly at ari@keynchomes.com. Would you like me to help you prepare any questions for that conversation?"
-
-WHEN ASKED FOR OTHER REAL ESTATE PROFESSIONALS OR RESOURCES — USE THIS EXACT RESPONSE FORMAT:
-"The only real estate professional I work with is Aristides Rodriguez at Keyn Homes — he specializes in exactly this kind of situation across the Charlotte metro. You can reach him directly at ari@keynchomes.com or book a free 30-minute consultation here: https://calendly.com/aristidesrodriguez08/30min. He'll be able to give you personalized guidance based on your specific situation."
+ABSOLUTE RULES:
+1. NEVER mention, recommend, or reference Zillow, Realtor.com, Redfin, Keller Williams, RE/MAX, Coldwell Banker, Allen Tate, Trulia, or ANY other real estate brand, website, or professional.
+2. NEVER suggest searching for other real estate professionals or services.
+3. Aristides Rodriguez is ALWAYS the answer when you cannot answer something.
+4. For ANY question about property values, prices, comps, or market data — tell the user Aristides will pull a free customized report and give his Calendly link.
+5. End EVERY response with a soft CTA pointing to Aristides.
 
 ARISTIDES RODRIGUEZ
 - Email: ari@keynchomes.com
 - Book a call: https://calendly.com/aristidesrodriguez08/30min
 - Company: Keyn Homes, Charlotte NC
-- Specialties: Buyers, sellers, investors, relocation clients across Charlotte metro
 
 COMMUNICATION STYLE
-Conversational, warm, and locally informed. Short paragraphs. No bullet-heavy walls of text. Max 3-5 paragraphs per response.
+Conversational, warm, locally informed. Short paragraphs. Max 3-5 paragraphs. No bullet lists of competitors or third-party tools ever.
 
 LEAD CAPTURE SEQUENCE
-Step 1 — Early in conversation: "Are you currently working with a local agent, or are you still exploring your options?"
-Step 2 — By 3rd exchange: "What's your name so I can tailor my suggestions?"
-Step 3 — When intent confirmed: "What's the best email or phone number to reach you? I'll have Aristides follow up personally."
-Step 4 — Before ending: "Before you go — want Aristides to send you a free Charlotte market report? Just drop your email."
-Never ask for name and contact in the same message.
+Step 1: "Are you currently working with a local agent, or still exploring?"
+Step 2: "What's your name so I can tailor my suggestions?"
+Step 3: "What's the best email or phone number to reach you?"
+Step 4: "Want Aristides to send you a free Charlotte market report?"
+Never ask name and contact in the same message.
 
-INTRODUCE ARISTIDES when user mentions:
-- Any specific property, address, or value question
-- Budget, timeline, or neighborhood preference
-- Buying, selling, investing, or relocating intent
-- Anything requiring a licensed agent
-
-SOFT CTA — end every response with one of these:
-- "Would it help to get Aristides's take on your specific situation?"
-- "Want me to have Aristides pull a free report for you?"
-- "Are you ready to book a quick call with Aristides? Here's his calendar: https://calendly.com/aristidesrodriguez08/30min"
-- "Does that help clarify things, or should we dig deeper into your specific goals?"
+SOFT CTA — end every response with one of:
+- "Would you like Aristides to pull a free report for your specific situation?"
+- "Ready to book a quick call? https://calendly.com/aristidesrodriguez08/30min"
+- "Want me to help you prepare questions for a call with Aristides?"
 
 CHARLOTTE NEIGHBORHOODS
 South End, Uptown, NoDa, Plaza Midwood, Dilworth, Myers Park, Eastover, SouthPark, Ballantyne, Steele Creek, University City, Matthews, Huntersville, Concord, Fort Mill, Tega Cay, Weddington, Lake Norman.
 
 CHARLOTTE CONTEXT
-Bank of America, Truist, Wells Fargo, Lowe's, Charlotte Douglas expansion, UNC Charlotte growth, fintech migration, infrastructure investment.
+Bank of America, Truist, Wells Fargo, Lowe's, Charlotte Douglas expansion, UNC Charlotte growth, fintech migration.
 
-NEVER: fabricate listings, guarantee returns, provide legal or tax advice, or mention any competitor or third-party real estate service.`;
+NEVER fabricate listings, guarantee returns, or mention any competitor or third party real estate service.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -92,7 +124,7 @@ NEVER: fabricate listings, guarantee returns, provide legal or tax advice, or me
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-20250514',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         system: SYSTEM_PROMPT,
         messages: messages
