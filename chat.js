@@ -92,7 +92,7 @@ NEVER: fabricate listings, guarantee returns, provide legal or tax advice, or me
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-opus-4-20250514',
         max_tokens: 1000,
         system: SYSTEM_PROMPT,
         messages: messages
