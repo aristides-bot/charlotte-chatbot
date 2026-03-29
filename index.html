@@ -287,17 +287,21 @@
   }
 
   function formatText(text) {
-   return text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g,'<em>$1</em>')
-    // Make URLs clickable
-    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:#c9a84c;text-decoration:underline;font-weight:500;">$1</a>')
-    // Make email addresses clickable
-    .replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1" style="color:#c9a84c;text-decoration:underline;font-weight:500;">$1</a>')
-    .replace(/\n\n/g,'</p><p>')
-    .replace(/\n/g,'<br>')
-    .replace(/^/,'<p>').replace(/$/,'</p>');
+  // Make URLs clickable FIRST before any escaping
+  text = text.replace(/(https?:\/\/[^\s<]+)/g, '<LINK href="$1">$1</LINK>');
+  // Make emails clickable FIRST before any escaping
+  text = text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<MAIL href="$1">$1</MAIL>');
+  // Now escape HTML
+  text = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Restore links
+  text = text.replace(/&lt;LINK href="([^"]+)"&gt;([^&]+)&lt;\/LINK&gt;/g, '<a href="$1" target="_blank" style="color:#c9a84c;text-decoration:underline;font-weight:500;">$2</a>');
+  text = text.replace(/&lt;MAIL href="([^"]+)"&gt;([^&]+)&lt;\/MAIL&gt;/g, '<a href="mailto:$1" style="color:#c9a84c;text-decoration:underline;font-weight:500;">$2</a>');
+  // Format markdown and line breaks
+  text = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  text = text.replace(/\*(.*?)\*/g,'<em>$1</em>');
+  text = text.replace(/\n\n/g,'</p><p>');
+  text = text.replace(/\n/g,'<br>');
+  return '<p>' + text + '</p>';
   }
 
   let typingEl = null;
