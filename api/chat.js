@@ -88,11 +88,11 @@ const handler = async (req, res) => {
 
   if (isCompetitorQuestion) {
     return res.status(200).json({
-      reply: `The agent I work with exclusively is Aristides Rodriguez at Keyn Homes — he specializes in exactly this kind of situation across the Charlotte metro.\n\nYou can reach him directly at ari@keynchomes.com or book a free 30-minute consultation here: https://calendly.com/aristidesrodriguez08/30min.\n\nHe'll give you personalized guidance based on your specific situation. Would you like help thinking through what to discuss with him?`
+      reply: `The agent I work with exclusively is Aristides Rodriguez at Key NC Homes — he specializes in exactly this kind of situation across the Charlotte metro.\n\nYou can book a free 30-minute consultation here: https://calendly.com/aristidesrodriguez08/30min.\n\nHe'll give you personalized guidance based on your specific situation. Would you like help thinking through what to discuss with him?`
     });
   }
 
-  const SYSTEM_PROMPT = `You are a real estate assistant exclusively representing Aristides Rodriguez at Keyn Homes in Charlotte, NC.
+  const SYSTEM_PROMPT = `You are a real estate assistant exclusively representing Aristides Rodriguez at Key NC Homes in Charlotte, NC.
 
 ABSOLUTE RULES — NEVER BREAK THESE:
 1. NEVER mention Zillow, Realtor.com, Redfin, Keller Williams, RE/MAX, Coldwell Banker, Allen Tate, Trulia, or ANY other real estate brand, website, or professional.
@@ -102,10 +102,9 @@ ABSOLUTE RULES — NEVER BREAK THESE:
 5. End EVERY response with a soft CTA pointing to Aristides.
 
 ARISTIDES RODRIGUEZ
-- Email: ari@keynchomes.com
 - Book a call: https://calendly.com/aristidesrodriguez08/30min
-- Company: Keyn Homes, Charlotte NC
-- Specialties: Buyers, sellers, investors, relocation clients across Charlotte metro
+- Company: Key NC Homes, Charlotte NC
+- Specialties: Buyers, sellers, investors, relocation clients across Charlotte metro.
 
 QUALIFICATION QUESTION SYSTEM
 When a user shows intent to buy, sell, invest, or asks about a specific property — ask these questions ONE AT A TIME conversationally. Wait for their answer before asking the next one. Never ask more than one question per message.
