@@ -34,6 +34,7 @@ const handler = async (req, res) => {
 
   // PRE-CHECK: Intercept property value questions before they reach the AI
   const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
+  console.log('RUNNING NEW CODE - last message:', lastMessage);
   const isValueQuestion = (
     lastMessage.includes('value') ||
     lastMessage.includes('worth') ||
