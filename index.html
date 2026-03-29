@@ -321,7 +321,6 @@
     typingEl.innerHTML = `<div class="avatar ai">AR</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
     msgs.appendChild(typingEl);
     msgs.scrollTop = msgs.scrollHeight;
-   if (conversationHistory.length >= 6) showBottomReset();
   }
 
   function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
