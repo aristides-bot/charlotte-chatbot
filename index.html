@@ -146,6 +146,15 @@
   .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--cream-dark); }
 
   .error-bubble { background: #fff5f5; border: 1px solid #fecaca; color: #b91c1c; border-radius: 4px 16px 16px 16px; padding: 12px 16px; font-size: 14px; max-width: 75%; }
+ @media (max-width: 600px) {
+  .bubble { max-width: 85%; font-size: 14px; padding: 11px 14px; }
+  .chat-wrapper { padding: 16px 12px 0; }
+  .welcome h2 { font-size: 20px; }
+  .chips { gap: 6px; }
+  .chip { font-size: 12px; padding: 6px 12px; }
+  header { padding: 14px 16px; }
+  .header-text h1 { font-size: 14px; }
+}
 </style>
 </head>
 <body>
