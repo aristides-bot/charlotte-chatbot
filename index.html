@@ -350,16 +350,7 @@
     const br = document.getElementById('bottomReset');
     if (br) br.remove();
   }
-
-  function showBottomReset() {
-    if (document.getElementById('bottomReset')) return;
-    const inputArea = document.querySelector('.input-area');
-    const btn = document.createElement('div');
-    btn.id = 'bottomReset';
-    btn.style.cssText = 'text-align:center;margin-bottom:8px;';
-    btn.innerHTML = '<button onclick="resetChat()" style="background:transparent;border:1px solid rgba(201,168,76,0.4);color:#c9a84c;font-family:\'DM Sans\',sans-serif;font-size:12px;padding:6px 18px;border-radius:20px;cursor:pointer;letter-spacing:0.04em;">↺ Start a New Conversation</button>';
-    inputArea.insertBefore(btn, inputArea.firstChild);
-  }
+ 
 </script>
 </body>
 </html>
