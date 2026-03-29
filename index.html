@@ -304,7 +304,6 @@
   text = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // Restore links
   text = text.replace(/&lt;LINK href="([^"]+)"&gt;([^&]+)&lt;\/LINK&gt;/g, '<a href="$1" target="_blank" style="color:#c9a84c;text-decoration:underline;font-weight:500;">$2</a>');
-  text = text.replace(/&lt;MAIL href="([^"]+)"&gt;([^&]+)&lt;\/MAIL&gt;/g, '<a href="mailto:$1" style="color:#c9a84c;text-decoration:underline;font-weight:500;">$2</a>');
   // Format markdown and line breaks
   text = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
   text = text.replace(/\*(.*?)\*/g,'<em>$1</em>');
