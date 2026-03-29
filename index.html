@@ -298,8 +298,8 @@
 
   function formatText(text) {
   // Make URLs clickable FIRST before any escaping
-  text = text.replace(/(https?:\/\/[^\s<]+)/g, '<LINK href="$1">📅 Book a Call with Aristides</LINK>');
-  // Make emails clickable FIRST before any escaping
+text = text.replace(/https:\/\/calendly\.com\/[^\s<]+/g, '<LINK href="https://calendly.com/aristidesrodriguez08/30min">📅 Book a Call with Aristides</LINK>');
+text = text.replace(/(?<!href=")(https?:\/\/(?!calendly\.com)[^\s<]+)/g, '<LINK href="$1">$1</LINK>');  // Make emails clickable FIRST before any escaping
   // Now escape HTML
   text = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // Restore links
