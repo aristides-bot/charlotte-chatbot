@@ -22,6 +22,14 @@ const handler = async (req, res) => {
           email: leadData.email || 'Not provided',
           phone: leadData.phone || 'Not provided',
           interest: leadData.interest || 'Not provided',
+          timeline: leadData.timeline || 'Not provided',
+          priceRange: leadData.priceRange || 'Not provided',
+          propertyAddress: leadData.propertyAddress || 'Not provided',
+          marketValue: leadData.marketValue || 'Not provided',
+          sellingPoints: leadData.sellingPoints || 'Not provided',
+          daysOnMarket: leadData.daysOnMarket || 'Not provided',
+          neighborhood: leadData.neighborhood || 'Not provided',
+          financing: leadData.financing || 'Not provided',
           summary: leadData.summary || 'New lead from Charlotte chatbot',
           timestamp: new Date().toISOString(),
           source: 'Charlotte Real Estate Chatbot'
@@ -32,7 +40,6 @@ const handler = async (req, res) => {
     }
   }
 
-  // INTERCEPT property value and competitor questions before AI sees them
   const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
 
   const isValueQuestion = (
@@ -50,7 +57,7 @@ const handler = async (req, res) => {
     lastMessage.includes('zillow') ||
     lastMessage.includes('redfin') ||
     lastMessage.includes('realtor.com') ||
-    lastMessage.includes('price') && (
+    (lastMessage.includes('price') && (
       lastMessage.includes('drive') ||
       lastMessage.includes('street') ||
       lastMessage.includes('road') ||
@@ -58,7 +65,7 @@ const handler = async (req, res) => {
       lastMessage.includes('blvd') ||
       lastMessage.includes('lane') ||
       lastMessage.includes('court')
-    )
+    ))
   );
 
   const isCompetitorQuestion = (
@@ -75,7 +82,7 @@ const handler = async (req, res) => {
 
   if (isValueQuestion) {
     return res.status(200).json({
-      reply: `Great question! Property values in Charlotte move quickly and vary street by street, so I want to make sure you get accurate numbers rather than a generic estimate.\n\nAristides Rodriguez can pull a free customized property report with current comps and live market data specific to that address — at no cost to you. It's one of the most valuable free services he offers.\n\nBook a free 30-minute call here: https://calendly.com/aristidesrodriguez08/30min or email him directly at ari@keynchomes.com.\n\nWould you like help preparing questions for that conversation?`
+      reply: `Great question! Property values in Charlotte move quickly and vary street by street, so I want to make sure you get accurate numbers rather than a generic estimate.\n\nBefore I connect you with Aristides, let me ask you a few quick questions so he can make the most of your conversation.\n\nFirst — are you looking to buy, sell, or invest in this property?`
     });
   }
 
@@ -100,26 +107,42 @@ ARISTIDES RODRIGUEZ
 - Company: Keyn Homes, Charlotte NC
 - Specialties: Buyers, sellers, investors, relocation clients across Charlotte metro
 
-COMMUNICATION STYLE
-Conversational, warm, locally informed. Short paragraphs. Max 3-5 paragraphs. Never list competitor tools or websites.
+QUALIFICATION QUESTION SYSTEM
+When a user shows intent to buy, sell, invest, or asks about a specific property — ask these questions ONE AT A TIME conversationally. Wait for their answer before asking the next one. Never ask more than one question per message.
 
-LEAD CAPTURE SEQUENCE
-Step 1: "Are you currently working with a local agent, or still exploring?"
-Step 2: "What's your name so I can tailor my suggestions?"
-Step 3: "What's the best email or phone number to reach you?"
-Step 4: "Want Aristides to send you a free Charlotte market report?"
-Never ask name and contact in the same message.
+Question sequence:
+1. "Are you looking to buy, sell, or invest in this property?"
+2. "What's your ideal timeline for making a move?"
+3. "What price range are you working with?"
+4. "Is there a specific address or neighborhood you're focused on?"
+5. "Are you currently working with a lender or would financing connections be helpful?"
+6. "What's your name so Aristides can personalize his follow-up?"
+7. "What's the best email or phone number to reach you?"
+
+After collecting contact info, say: "Perfect — I've passed everything along to Aristides and he'll be in touch shortly. In the meantime, you can also book a time directly here: https://calendly.com/aristidesrodriguez08/30min"
+
+TRIGGER QUALIFICATION when user:
+- Asks about a specific property or address
+- Mentions buying, selling, or investing
+- Asks about market values, comps, or neighborhood trends
+- Expresses readiness to take action
+
+COMMUNICATION STYLE
+Conversational, warm, locally informed. Short paragraphs. Max 3-5 paragraphs. Never list competitor tools or websites. Ask only ONE question per response.
 
 SOFT CTA — end every response with one of:
 - "Would you like Aristides to pull a free report for your specific situation?"
 - "Ready to book a quick call? https://calendly.com/aristidesrodriguez08/30min"
-- "Want me to help you prepare questions for a call with Aristides?"
+- "Want me to help you prepare for a call with Aristides?"
 
 CHARLOTTE NEIGHBORHOODS
 South End, Uptown, NoDa, Plaza Midwood, Dilworth, Myers Park, Eastover, SouthPark, Ballantyne, Steele Creek, University City, Matthews, Huntersville, Concord, Fort Mill, Tega Cay, Weddington, Lake Norman.
 
 CHARLOTTE CONTEXT
 Bank of America, Truist, Wells Fargo, Lowe's, Charlotte Douglas expansion, UNC Charlotte growth, fintech migration.
+
+LEAD SUMMARY
+Once you have collected the user's name, email or phone, and their answers to the qualification questions — summarize everything back to the user and confirm Aristides will be in touch.
 
 NEVER fabricate listings, guarantee returns, or mention any competitor or third party real estate service.`;
 
@@ -147,6 +170,32 @@ NEVER fabricate listings, guarantee returns, or mention any competitor or third 
     const lastUserMsg = messages[messages.length - 1]?.content || '';
     const emailMatch = lastUserMsg.match(/[\w.-]+@[\w.-]+\.\w+/);
     const phoneMatch = lastUserMsg.match(/(\+?1?\s?)?(\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})/);
+
+    // Build lead summary from conversation
+    let leadSummary = 'New lead from Charlotte chatbot.\n\nConversation summary:\n';
+    messages.forEach(m => {
+      if (m.role === 'user') leadSummary += `User: ${m.content}\n`;
+    });
+
+    if (emailMatch || phoneMatch) {
+      if (process.env.ZAPIER_WEBHOOK_URL) {
+        try {
+          await fetch(process.env.ZAPIER_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: emailMatch ? emailMatch[0] : 'Not provided',
+              phone: phoneMatch ? phoneMatch[0] : 'Not provided',
+              summary: leadSummary,
+              timestamp: new Date().toISOString(),
+              source: 'Charlotte Real Estate Chatbot'
+            })
+          });
+        } catch (e) {
+          console.error('Zapier webhook failed:', e.message);
+        }
+      }
+    }
 
     return res.status(200).json({
       reply,
