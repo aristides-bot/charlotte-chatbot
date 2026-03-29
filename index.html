@@ -314,10 +314,45 @@
     typingEl.innerHTML = `<div class="avatar ai">AR</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
     msgs.appendChild(typingEl);
     msgs.scrollTop = msgs.scrollHeight;
+   if (conversationHistory.length >= 6) showBottomReset();
   }
 
   function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
   function setLoading(state) { isLoading = state; document.getElementById('sendBtn').disabled = state; }
+   function resetChat() {
+    conversationHistory = [];
+    const msgs = document.getElementById('messages');
+    msgs.innerHTML = `
+      <div class="welcome">
+        <div class="city-badge">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+          Charlotte, NC
+        </div>
+        <h2>Your Charlotte Real Estate Advisor</h2>
+        <p>Ask about buying, selling, investing, or relocating to the Charlotte metro area.</p>
+      </div>
+      <div class="divider">Start with a question</div>
+      <div class="chips" id="chips">
+        <div class="chip" onclick="sendChip(this)">I'm relocating to Charlotte</div>
+        <div class="chip" onclick="sendChip(this)">Best neighborhoods for families?</div>
+        <div class="chip" onclick="sendChip(this)">Is now a good time to buy?</div>
+        <div class="chip" onclick="sendChip(this)">I want to sell my home</div>
+        <div class="chip" onclick="sendChip(this)">Investment properties in Charlotte</div>
+        <div class="chip" onclick="sendChip(this)">Compare South End vs NoDa</div>
+      </div>`;
+    const br = document.getElementById('bottomReset');
+    if (br) br.remove();
+  }
+
+  function showBottomReset() {
+    if (document.getElementById('bottomReset')) return;
+    const inputArea = document.querySelector('.input-area');
+    const btn = document.createElement('div');
+    btn.id = 'bottomReset';
+    btn.style.cssText = 'text-align:center;margin-bottom:8px;';
+    btn.innerHTML = '<button onclick="resetChat()" style="background:transparent;border:1px solid rgba(201,168,76,0.4);color:#c9a84c;font-family:\'DM Sans\',sans-serif;font-size:12px;padding:6px 18px;border-radius:20px;cursor:pointer;letter-spacing:0.04em;">↺ Start a New Conversation</button>';
+    inputArea.insertBefore(btn, inputArea.firstChild);
+  }
 </script>
 </body>
 </html>
