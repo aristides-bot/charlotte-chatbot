@@ -152,7 +152,7 @@ NEVER fabricate listings, guarantee returns, or mention any competitor or third 
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5-5',
         max_tokens: 1000,
         system: SYSTEM_PROMPT,
         messages: messages,
