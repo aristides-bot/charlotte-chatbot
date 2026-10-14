@@ -43,11 +43,10 @@ const handler = async (req, res) => {
   const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
 
   const isValueQuestion = (
-    lastMessage.includes('value') ||
-    lastMessage.includes('worth') ||
-    lastMessage.includes('how much') ||
+    (lastMessage.includes('value') && !lastMessage.includes('neighborhood')) ||
+    (lastMessage.includes('worth') && !lastMessage.includes('neighborhood')) ||
+    (lastMessage.includes('how much') && !lastMessage.includes('loan') && !lastMessage.includes('afford') && !lastMessage.includes('neighborhood')) ||
     lastMessage.includes('zestimate') ||
-    lastMessage.includes('estimate') ||
     lastMessage.includes('valuation') ||
     lastMessage.includes('comps') ||
     lastMessage.includes('market value') ||
